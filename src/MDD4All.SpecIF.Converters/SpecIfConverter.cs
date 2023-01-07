@@ -16,8 +16,8 @@ namespace MDD4All.SpecIF.Converters
 							   ISpecIfMetadataWriter targetMetadataWriter,
 							   bool overrideExistingData = false)
 		{
-			ConvertMetadata(sourceData, targetMetadataWriter);
-			ConvertData(sourceData, targetDataWriter);
+			ConvertMetadata(sourceData, targetMetadataWriter, overrideExistingData);
+			ConvertData(sourceData, targetDataWriter, overrideExistingData);
 
 			ProjectDescriptor project = new ProjectDescriptor()
 			{
