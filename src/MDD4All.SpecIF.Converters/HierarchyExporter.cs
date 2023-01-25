@@ -1,6 +1,5 @@
 ﻿using MDD4All.SpecIF.DataModels;
 using MDD4All.SpecIF.DataProvider.Contracts;
-using System;
 using System.Collections.Generic;
 
 namespace MDD4All.SpecIF.Converters
@@ -74,6 +73,12 @@ namespace MDD4All.SpecIF.Converters
 
             foreach (KeyValuePair<Key, PropertyClass> keyValuePair in PropertyClasses)
             {
+                // set values to null if it is an empty list to avoid constrain check errors
+                if(keyValuePair.Value.Values != null && keyValuePair.Value.Values.Count == 0)
+                {
+                    keyValuePair.Value.Values = null;
+                }
+
                 result.PropertyClasses.Add(keyValuePair.Value);
             }
 
@@ -125,7 +130,7 @@ namespace MDD4All.SpecIF.Converters
 
                                 if (_includeMetadata)
                                 {
-                                    AddMetadataForResource(resource);
+                                    AddMetadataForResource(resource.Class);
                                 }
                                 if(_includeStatements)
                                 {
@@ -143,15 +148,15 @@ namespace MDD4All.SpecIF.Converters
             }
         }
 
-        private void AddMetadataForResource(Resource resource)
+        private void AddMetadataForResource(Key resourceClassKey)
         {
-            if (!ResouceClasses.ContainsKey(resource.Class))
+            if (!ResouceClasses.ContainsKey(resourceClassKey))
             {
-                ResourceClass resourceClass = _metadataReader.GetResourceClassByKey(resource.Class);
+                ResourceClass resourceClass = _metadataReader.GetResourceClassByKey(resourceClassKey);
 
                 if(resourceClass != null)
                 {
-                    ResouceClasses.Add(resource.Class, resourceClass);
+                    ResouceClasses.Add(resourceClassKey, resourceClass);
 
                     foreach(Key propertyClassKey in resourceClass.PropertyClasses)
                     {
@@ -190,13 +195,13 @@ namespace MDD4All.SpecIF.Converters
 
                     if(_includeMetadata)
                     {
-                        AddMetadataForResource(statement);
+                        AddMetadataForStatement(statement);
                     }
                 }
             }
         }
 
-        private void AddMetadataForResource(Statement statement)
+        private void AddMetadataForStatement(Statement statement)
         {
             if (!StatementClasses.ContainsKey(statement.Class))
             {
@@ -227,6 +232,22 @@ namespace MDD4All.SpecIF.Converters
                                     }
                                 }
                             }
+                        }
+                    }
+
+                    if (statementClass.SubjectClasses != null)
+                    {
+                        foreach (Key key in statementClass.SubjectClasses)
+                        {
+                            AddMetadataForResource(key);
+                        }
+                    }
+
+                    if (statementClass.ObjectClasses != null)
+                    {
+                        foreach (Key key in statementClass.ObjectClasses)
+                        {
+                            AddMetadataForResource(key);
                         }
                     }
                 }
