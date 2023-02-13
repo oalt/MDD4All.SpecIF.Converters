@@ -148,14 +148,27 @@ namespace MDD4All.SpecIF.Converters
             }
         }
 
-        private void AddMetadataForResource(Key resourceClassKey)
+        private void AddMetadataForResource(Key originalResourceClassKey)
         {
+            Key resourceClassKey = originalResourceClassKey;
+
+            if(string.IsNullOrEmpty(originalResourceClassKey.Revision))
+            {
+                ResourceClass resourceClass = _metadataReader.GetResourceClassByKey(resourceClassKey);
+                if (resourceClass != null)
+                {
+                    resourceClassKey = new Key(resourceClass.ID, resourceClass.Revision);
+                }
+            }
+
             if (!ResouceClasses.ContainsKey(resourceClassKey))
             {
                 ResourceClass resourceClass = _metadataReader.GetResourceClassByKey(resourceClassKey);
 
                 if(resourceClass != null)
                 {
+                    
+
                     ResouceClasses.Add(resourceClassKey, resourceClass);
 
                     foreach(Key propertyClassKey in resourceClass.PropertyClasses)
