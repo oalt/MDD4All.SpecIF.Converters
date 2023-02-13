@@ -1,6 +1,5 @@
 ﻿using MDD4All.SpecIF.DataModels;
 using MDD4All.SpecIF.DataProvider.Contracts;
-using System;
 using System.Collections.Generic;
 
 namespace MDD4All.SpecIF.Converters
@@ -74,6 +73,12 @@ namespace MDD4All.SpecIF.Converters
 
             foreach (KeyValuePair<Key, PropertyClass> keyValuePair in PropertyClasses)
             {
+                // set values to null if it is an empty list to avoid constrain check errors
+                if(keyValuePair.Value.Values != null && keyValuePair.Value.Values.Count == 0)
+                {
+                    keyValuePair.Value.Values = null;
+                }
+
                 result.PropertyClasses.Add(keyValuePair.Value);
             }
 
@@ -125,7 +130,11 @@ namespace MDD4All.SpecIF.Converters
 
                                 if (_includeMetadata)
                                 {
-                                    AddMetadataForResource(resource);
+                                    AddMetadataForResource(resource.Class);
+                                }
+                                if(_includeStatements)
+                                {
+                                    AddStatementsForResource(resource);
                                 }
                             }
                         }
@@ -139,15 +148,15 @@ namespace MDD4All.SpecIF.Converters
             }
         }
 
-        private void AddMetadataForResource(Resource resource)
+        private void AddMetadataForResource(Key resourceClassKey)
         {
-            if (!ResouceClasses.ContainsKey(resource.Class))
+            if (!ResouceClasses.ContainsKey(resourceClassKey))
             {
-                ResourceClass resourceClass = _metadataReader.GetResourceClassByKey(resource.Class);
+                ResourceClass resourceClass = _metadataReader.GetResourceClassByKey(resourceClassKey);
 
                 if(resourceClass != null)
                 {
-                    ResouceClasses.Add(resource.Class, resourceClass);
+                    ResouceClasses.Add(resourceClassKey, resourceClass);
 
                     foreach(Key propertyClassKey in resourceClass.PropertyClasses)
                     {
@@ -167,6 +176,78 @@ namespace MDD4All.SpecIF.Converters
                                     }
                                 }
                             }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void AddStatementsForResource(Resource resource)
+        {
+            List<Statement> statements = _dataReader.GetAllStatementsForResource(new Key(resource.ID, resource.Revision));
+
+            foreach(Statement statement in statements)
+            {
+                Key statementKey = new Key(statement.ID, statement.Revision);
+                if(!Statements.ContainsKey(statementKey))
+                {
+                    Statements.Add(statementKey, statement);
+
+                    if(_includeMetadata)
+                    {
+                        AddMetadataForStatement(statement);
+                    }
+                }
+            }
+        }
+
+        private void AddMetadataForStatement(Statement statement)
+        {
+            if (!StatementClasses.ContainsKey(statement.Class))
+            {
+                StatementClass statementClass = _metadataReader.GetStatementClassByKey(statement.Class);
+
+                if (statementClass != null)
+                {
+                    StatementClasses.Add(statement.Class, statementClass);
+
+                    if (statementClass.PropertyClasses != null)
+                    {
+                        foreach (Key propertyClassKey in statementClass.PropertyClasses)
+                        {
+                            if (!PropertyClasses.ContainsKey(propertyClassKey))
+                            {
+                                PropertyClass propertyClass = _metadataReader.GetPropertyClassByKey(propertyClassKey);
+                                if (propertyClass != null)
+                                {
+                                    PropertyClasses.Add(propertyClassKey, propertyClass);
+
+                                    if (!DataTypes.ContainsKey(propertyClass.DataType))
+                                    {
+                                        DataType dataType = _metadataReader.GetDataTypeByKey(propertyClass.DataType);
+                                        if (dataType != null)
+                                        {
+                                            DataTypes.Add(propertyClass.DataType, dataType);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if (statementClass.SubjectClasses != null)
+                    {
+                        foreach (Key key in statementClass.SubjectClasses)
+                        {
+                            AddMetadataForResource(key);
+                        }
+                    }
+
+                    if (statementClass.ObjectClasses != null)
+                    {
+                        foreach (Key key in statementClass.ObjectClasses)
+                        {
+                            AddMetadataForResource(key);
                         }
                     }
                 }
