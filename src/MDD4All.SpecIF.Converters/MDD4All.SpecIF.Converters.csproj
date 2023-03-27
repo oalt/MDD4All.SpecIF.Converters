@@ -14,6 +14,8 @@
     <Description>SpecIF data converters</Description>
     <Copyright>(c) MDD4All.de</Copyright>
     <PackageReadmeFile>Nuget.md</PackageReadmeFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>SpecIF Converters</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
