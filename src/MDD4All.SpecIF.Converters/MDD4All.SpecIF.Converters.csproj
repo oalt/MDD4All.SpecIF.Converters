@@ -20,13 +20,11 @@
 
   <ItemGroup>
     <Compile Remove="FileToMongoDbConverter.cs" />
+    <Compile Remove="MetadataConverterForSpecIfOneRelease.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="MDD4All.SpecIF.DataModels.Manipulation" Version="3.0.0.31" />
-    <PackageReference Include="MDD4All.SpecIF.DataProvider.File" Version="3.0.0.14" />
-    <PackageReference Include="MDD4All.SpecIF.DataProvider.MongoDB" Version="3.0.0.10" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
   </ItemGroup>
 
   <ItemGroup>
