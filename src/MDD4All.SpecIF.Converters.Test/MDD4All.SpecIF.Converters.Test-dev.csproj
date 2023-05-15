@@ -8,6 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\MDD4All.SpecIF.DataProvider.File\src\MDD4All.SpecIF.DataProvider.File\MDD4All.SpecIF.DataProvider.File-dev.csproj" />
+    <ProjectReference Include="..\..\..\MDD4All.SpecIF.DataProvider.MongoDB\src\MDD4All.SpecIF.DataProvider.MongoDB\MDD4All.SpecIF.DataProvider.MongoDB-dev.csproj" />
     <ProjectReference Include="..\MDD4All.SpecIF.Converters\MDD4All.SpecIF.Converters-dev.csproj" />
   </ItemGroup>
 
