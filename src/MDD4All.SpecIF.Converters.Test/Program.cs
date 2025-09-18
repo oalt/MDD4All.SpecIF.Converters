@@ -59,7 +59,7 @@ namespace MDD4All.SpecIF.Converters.Test
 
                 //MetadataConverterForSpecIfOneRelease converter = new MetadataConverterForSpecIfOneRelease(file);
 
-                DataModels.SpecIF specIF = SpecIfFileReaderWriter.ReadDataFromSpecIfFile(file.FullName);
+                DataModels.SpecIF specIF = SpecIfFileReaderWriter.ReadDataFromSpecIfFile<SpecIF.DataModels.SpecIF>(file.FullName);
 
                 if (specIF != null)
                 {
